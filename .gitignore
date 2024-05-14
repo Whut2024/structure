@@ -1,0 +1,8 @@
+.idea
+target
+out
+*.xml
+
+
+cmake-build-debug
+CMakeLists.txt

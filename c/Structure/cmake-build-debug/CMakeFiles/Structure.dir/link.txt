@@ -1,3 +1,0 @@
-"D:\Developer\hobby\C\Clion\CLion 2023.3.2\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\Structure.dir/objects.a
-D:\DEVELO~1\hobby\C\Clion\CLION2~1.2\bin\mingw\bin\ar.exe qc CMakeFiles\Structure.dir/objects.a @CMakeFiles\Structure.dir\objects1.rsp
-D:\DEVELO~1\hobby\C\Clion\CLION2~1.2\bin\mingw\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\Structure.dir/objects.a -Wl,--no-whole-archive -o Structure.exe -Wl,--out-implib,libStructure.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Structure.dir\linkLibs.rsp
