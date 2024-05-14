@@ -110,7 +110,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "B-Tree/structure.h",
+			"path" : "B-Tree/b-tree.h",
 			"sourceGroupIndex" : 1
 		}
 	],
