@@ -29,6 +29,37 @@ typedef struct Node {
     int level;
 } Node;
 
+
+/**
+ * 递归打印树
+ * @param root 根节点
+ */
+void printTree(Node *root) {
+    if (root == NULL) return;
+
+    for (int i = 1; i <= root->keyNum; ++i) {
+        printf("%d ", root->keys[i]);
+    }
+
+    printf("\n");
+
+    for (int i = 0; i < root->childrenNum; ++i) {
+        printTree(root->children[i]);
+    }
+}
+
+void freeTree(Node *root) {
+    if (root == NULL) return;
+
+    for (int i = 0; i < root->childrenNum; ++i) {
+        freeTree(root->children[i]);
+    }
+
+    for (int i = 0; i < root->keyNum; ++i) {
+        freeTree(root);
+    }
+}
+
 // 初始化B树节点
 Node *initNode(int level) {
     Node *node = (Node *) malloc(sizeof(Node));
@@ -176,6 +207,9 @@ void addData(Node *node, int data, Node **root) {
 
         addData(father, node->keys[middle], root);
     }
+
+    // 清除多余内存
+    free(node);
 }
 
 /**
@@ -188,35 +222,22 @@ void insert(Node **root, int data) {
     addData(node, data, root);
 }
 
-/**
- * 递归打印树
- * @param root 根节点
- */
-void printTree(Node *root) {
-    if (root == NULL) return;
 
-    for (int i = 1; i <= root->keyNum; ++i) {
-        printf("%d ", root->keys[i]);
+void deleteKeyOnLeaf(Node* node, int toDeletedIndex) {
+    // 删除
+    for (int i = toDeletedIndex; i < node->keyNum; ++i) {
+        node->keys[i] = node->keys[i + 1];
     }
+    node->keyNum--;
 
-    printf("\n");
 
-    for (int i = 0; i < root->childrenNum; ++i) {
-        printTree(root->children[i]);
-    }
+    // 关键字充足
+    if (node->keyNum >= (node->level / 2 + node->level % 2)) return;
+    
+
 }
 
-void freeTree(Node *root) {
-    if (root == NULL) return;
-
-    for (int i = 0; i < root->childrenNum; ++i) {
-        freeTree(root->children[i]);
-    }
-
-    for (int i = 0; i < root->keyNum; ++i) {
-        freeTree(root);
-    }
-}
+// 删除节点
 
 
 #endif //STRUCTURE_B_TREE_H
