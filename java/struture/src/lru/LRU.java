@@ -76,6 +76,15 @@ public class LRU<K, V> {
     private final Map<K, Node<K, V>> hash = new HashMap<>();
 
 
+    private final int CAPACITY;
+
+    private int size;
+
+    public LRU(int capacity) {
+        if (capacity < 1) throw new IllegalArgumentException();
+        this.CAPACITY = capacity;
+    }
+
     public V get(K key) {
         if (!hash.containsKey(key)) return null;
 
@@ -92,8 +101,9 @@ public class LRU<K, V> {
                 dummy.next = tail;
                 tail.pre = dummy;
 
-                tail.next  =  head;
+                tail.next = head;
                 head.pre = tail;
+                head.next = null;
 
                 head = tail;
                 tail = tailPreNode;
@@ -103,14 +113,15 @@ public class LRU<K, V> {
 
             // head-----xxx-----tail
 
-            node.next = head.next;
+            node.next = head;
+            head.pre = node;
             node.pre = dummy;
+            dummy.next = node;
 
-            head.next = null;
-            head.pre = tailPreNode;
-            tailPreNode.pre  = head;
+            tailPreNode.next = null;
 
             head = node;
+            tail = tailPreNode;
 
             return node.value;
         }
@@ -139,7 +150,10 @@ public class LRU<K, V> {
 
         if (removeNode == head) {
             if (tail == head) {
+                dummy.next = null;
                 head = tail = null;
+
+                size--;
                 return removeNode.value;
             }
 
@@ -154,6 +168,7 @@ public class LRU<K, V> {
 
             head = nextNode;
 
+            size--;
             return removeNode.value;
         }
 
@@ -161,7 +176,7 @@ public class LRU<K, V> {
             Node<K, V> preNode = tail.pre;
 
             // help gc
-            tail.pre  = null;
+            tail.pre = null;
             preNode.next = null;
 
             tail = preNode;
@@ -179,15 +194,18 @@ public class LRU<K, V> {
         preNode.next = nextNode;
         nextNode.pre = preNode;
 
+        size--;
         return removeNode.value;
     }
 
     public void put(K key, V value) {
         if (hash.containsKey(key)) {
-            Node<K, V> node = hash.get(key);
-            node.value = value;
+            // flush value and site
+            remove(key);
+            put(key, value);
             return;
         }
+
 
         Node<K, V> newNode = new Node<>(key, value);
         if (head == null) {
@@ -197,13 +215,30 @@ public class LRU<K, V> {
             head.pre = dummy;
 
             tail = head;
-        } else {
-            tail.next = newNode;
-            newNode.pre = tail;
 
+            size++;
+        } else {
+            if (CAPACITY == size) {
+                Node<K, V> preNode = tail.pre;
+
+                preNode.next = newNode;
+                newNode.pre = preNode;
+
+                // help gc
+                tail.pre = null;
+            } else {
+                tail.next = newNode;
+                newNode.pre = tail;
+
+                size++;
+            }
             tail = newNode;
         }
 
         hash.put(key, tail);
+    }
+
+    public int size() {
+        return this.size;
     }
 }
